@@ -1,0 +1,101 @@
+'use strict';
+
+var join = require('path').join,
+    sync = require('sync'),
+    fs = require('fs-extra'),
+    exec = require('child_process').exec,
+    style = require('../lib/style'),
+    Dobro = require('../lib/main'),
+    cwd = process.cwd(),
+    temp = join(process.cwd(), '__dobro_temp__'),
+    isVerboseOutput = process.argv.indexOf('-v') > -1,
+    isLocal = process.argv.indexOf('--local') > -1,
+    bundle,
+    dobro;
+
+
+// Начало выполнения.
+// sync создает новый контекст выполнения и внетри метода
+// могут выполняться синхронно через method.sync
+// первый метод-параметр будет выполняться в этом контексте
+// второй метод-параметр будет вызван по завершении (успешном или нет) первого метода
+sync(function() {
+
+    if (isLocal) {
+        console.log(style('red', 'Внимание, установка в локальном режиме, текущие зависимости ' +
+            'не будут добавлены в хранилище'));
+
+    } else if (exec.sync(null, 'uname -a').indexOf('Linux ppcdev') !== 0) {
+        throw new Error('Для установки зависимостей не на ppcdev нужен флаг --local.');
+    }
+
+
+    // Читаем файл конфига и если с ним проблема, то прекращаем работу
+    try {
+        bundle = JSON.parse(fs.readFileSync(join(process.cwd(), 'dobro.json')));
+    } catch(e) {
+        throw new Error('Не могу распарсить dobro.json. Проверьте валидность файла.');
+    }
+
+    console.time('Build time');
+
+    dobro = new Dobro({
+        cwd: process.cwd(),
+        storage: bundle.storage
+    });
+
+    // Если был указан параметр -v, то делаем подробный вывод
+    if (isVerboseOutput)
+        dobro.on('log', function(msg) {
+            console.log('\t', 'dobro: ', msg);
+        });
+
+    fs.removeSync(temp);
+    fs.mkdirpSync(temp);
+    fs.mkdirpSync(join(temp, '.dobrosvntemp'));
+
+
+    bundle.dependencies.forEach(function(pack) {
+        console.log('\nPack: %s', style('blue', pack.name));
+        var packPath = join(temp, dobro.generatePackName(pack));
+
+        // в форс режиме просто устанавливаем зависимости
+        if (isLocal) {
+            fs.mkdirsSync(packPath);
+            // устанавливаем пакет с его путями
+            dobro.install(packPath, pack);
+            fs.copy.sync(fs, packPath, process.cwd());
+
+            // пытаемся установить из хранилища
+        } else if (dobro.installFromStorage(pack)) {
+
+            // если из хранилища установить не получилось
+            // делаем полную установку
+
+            // создаем временную папку для пакета
+            fs.mkdirsSync(packPath);
+
+            // устанавливаем в эту папку пакет с его путями
+            dobro.install(packPath, pack);
+            // сохраняем папку в хранилище
+            dobro.saveToStorage(packPath, pack);
+            // устанавливаем из хранилища повторно
+            dobro.installFromStorage(pack);
+        }
+
+        console.log('%s ready', style('green', pack.name));
+    });
+
+}, function(err) {
+
+    if (err) {
+        console.log(style('red', 'ERROR ' + err), '\n' + err.stack);
+
+        process.exit(1);
+    }
+
+    // удаляем временную папку
+    fs.removeSync(temp);
+
+    console.timeEnd('Build time')
+});

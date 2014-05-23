@@ -1,22 +1,22 @@
 {
-    "name": "dobro",
-    "version": "0.0.4",
-    "description": "Tool for packing and storing deps of your project",
-    "main": "index.js",
-    "scripts": {
-        "test": "mocha test --reporter=nyan"
-    },
-    "bin": {
-        "dobro": "./bin/dobro"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@github.yandex-team.ru:slonoed/dobro.git"
-    },
-    "author": "",
-    "license": "MIT",
-    "dependencies": {
-        "fs-extra": "0.8.1",
-        "sync": "0.2.2"
-    }
+  "name": "dobro",
+  "version": "0.0.5",
+  "description": "Tool for packing and storing deps of your project",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test --reporter=nyan"
+  },
+  "bin": {
+    "dobro": "./bin/dobro"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.yandex-team.ru:slonoed/dobro.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "0.8.1",
+    "sync": "0.2.2"
+  }
 }

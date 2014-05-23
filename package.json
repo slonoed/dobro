@@ -1,6 +1,6 @@
 {
     "name": "dobro",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Tool for packing and storing deps of your project",
     "main": "index.js",
     "scripts": {
@@ -14,10 +14,7 @@
         "url": "git@github.yandex-team.ru:slonoed/dobro.git"
     },
     "author": "",
-    "license": "BSD-2-Clause",
-    "devDependencies": {
-        "sinon": "1.9.1"
-    },
+    "license": "MIT",
     "dependencies": {
         "fs-extra": "0.8.1",
         "sync": "0.2.2"

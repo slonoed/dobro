@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "description": "Tool for packing and storing deps of your project",
   "main": "index.js",
-  "scripts": {
-    "test": "mocha test --reporter=nyan"
-  },
   "bin": {
     "dobro": "./bin/dobro"
   },

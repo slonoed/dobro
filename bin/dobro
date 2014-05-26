@@ -12,6 +12,7 @@ var join = require('path').join,
     temp = join(process.cwd(), '__dobro_temp__'),
     isVerboseOutput = process.argv.indexOf('-v') > -1,
     isLocal = process.argv.indexOf('--local') > -1,
+    noPush = process.argv.indexOf('--no-push') > -1,
     bundle,
     dobro;
 
@@ -27,8 +28,6 @@ sync(function() {
         console.log(style('red', 'Внимание, установка в локальном режиме, текущие зависимости ' +
             'не будут добавлены в хранилище'));
 
-    } else if (exec.sync(null, 'uname -a').indexOf('Linux ppcdev') !== 0) {
-        throw new Error('Для установки зависимостей не на ppcdev нужен флаг --local.');
     }
 
 
@@ -79,10 +78,15 @@ sync(function() {
 
             // устанавливаем в эту папку пакет с его путями
             dobro.install(packPath, pack);
-            // сохраняем папку в хранилище
-            dobro.saveToStorage(packPath, pack);
-            // устанавливаем из хранилища повторно
-            dobro.installFromStorage(pack);
+
+            if (noPush) {
+                fs.copy.sync(fs, packPath, process.cwd());
+            } else {
+                // сохраняем папку в хранилище
+                dobro.saveToStorage(packPath, pack);
+                // устанавливаем из хранилища повторно
+                dobro.installFromStorage(pack);
+            }
         }
 
         console.log('%s ready', style('green', pack.name));

@@ -1,1 +1,2 @@
-=== Tool for packing and storing deps of your project
+Tool for packing and storing deps of your project
+

@@ -25,9 +25,7 @@ var join = require('path').join,
 sync(function() {
 
     if (isLocal) {
-        console.log(style('red', 'Внимание, установка в локальном режиме, текущие зависимости ' +
-            'не будут добавлены в хранилище'));
-
+        console.log(style('red', 'Local mode is ON: dependencies will not added to storage'));
     }
 
 
@@ -35,7 +33,7 @@ sync(function() {
     try {
         bundle = JSON.parse(fs.readFileSync(join(process.cwd(), 'dobro.json')));
     } catch(e) {
-        throw new Error('Не могу распарсить dobro.json. Проверьте валидность файла.');
+        throw new Error('Cat\'t parse dobro.json, check this file');
     }
 
     console.time('Build time');
